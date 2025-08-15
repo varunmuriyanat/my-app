@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Access Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af'
+                        },
+                        dark: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            800: '#1e293b',
+                            900: '#0f172a'
+                        }
+                    },
+                    width: {
+                        '72': '18rem'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </head>
+  <body>
+    <div id="root">
+      <!-- Mobile Overlay -->
+        <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-gray-800 shadow-xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            <!-- Sidebar Header -->
+            <div class="flex items-center justify-center h-20 bg-gradient-to-r from-primary-600 to-primary-700 border-b border-gray-700">
+                <h2 class="text-xl font-bold text-white tracking-wide">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    SecureAccess
+                </h2>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="mt-8">
+                <div class="px-4 space-y-2">
+                    <a href="#" class="nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-lg text-white bg-primary-600 shadow-lg" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt mr-3 text-base"></i>
+                        Dashboard
+                    </a>
+                    
+                    <a href="#" class="nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200" data-page="users">
+                        <i class="fas fa-users mr-3 text-base"></i>
+                        User Management
+                    </a>
+                    
+                    <a href="#" class="nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200" data-page="access">
+                        <i class="fas fa-door-open mr-3 text-base"></i>
+                        Access Control
+                    </a>
+                    
+                    <a href="#" class="nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200" data-page="logs">
+                        <i class="fas fa-clipboard-list mr-3 text-base"></i>
+                        Activity Logs
+                    </a>
+                    
+                    <a href="#" class="nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200" data-page="security">
+                        <i class="fas fa-exclamation-triangle mr-3 text-base"></i>
+                        Security Alerts
+                    </a>
+                    
+                    <a href="#" class="nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200" data-page="reports">
+                        <i class="fas fa-chart-bar mr-3 text-base"></i>
+                        Reports
+                    </a>
+                    
+                    <a href="#" class="nav-link group flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200" data-page="settings">
+                        <i class="fas fa-cog mr-3 text-base"></i>
+                        Settings
+                    </a>
+                </div>
+            </nav>
+            
+            <!-- User Profile Section -->
+            <div class="absolute bottom-0 w-full p-4 border-t border-gray-700 bg-gray-800">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-white">Admin User</p>
+                        <p class="text-xs text-gray-400">System Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="lg:ml-72 min-h-screen bg-gray-900">
+            <!-- Header -->
+            <header class="bg-gray-800 shadow-sm border-b border-gray-700">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <!-- Logo and Title -->
+                    <div class="flex items-center">
+                        <button id="menuToggle" class="mr-4 lg:hidden text-gray-400 hover:text-white focus:outline-none">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg mr-4">
+                                <i class="fas fa-building text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-2xl font-bold text-white">BuildingAccess Pro</h1>
+                                <p class="text-sm text-gray-400">Enterprise Access Management</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <div class="flex items-center space-x-4">
+                        <button class="relative p-2 text-gray-400 hover:text-white focus:outline-none">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
+                        </button>
+                        
+                        <button class="p-2 text-gray-400 hover:text-white focus:outline-none">
+                            <i class="fas fa-search text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content Area -->
+            <div class="p-6">
+                <!-- Dashboard Content -->
+                <div id="dashboard-content" class="page-content">
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-white mb-2">Dashboard Overview</h2>
+                        <p class="text-gray-400">Monitor your building access systems in real-time</p>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:shadow-lg transition-shadow duration-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm font-medium">Total Users</p>
+                                    <p class="text-3xl font-bold text-white mt-1">1,247</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-users text-blue-400 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center text-sm">
+                                <span class="text-green-400">+12%</span>
+                                <span class="text-gray-400 ml-2">from last month</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:shadow-lg transition-shadow duration-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm font-medium">Access Points</p>
+                                    <p class="text-3xl font-bold text-white mt-1">48</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-door-open text-green-400 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center text-sm">
+                                <span class="text-green-400">All Active</span>
+                                <span class="text-gray-400 ml-2">System Status</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:shadow-lg transition-shadow duration-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm font-medium">Today's Entries</p>
+                                    <p class="text-3xl font-bold text-white mt-1">3,429</p>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-sign-in-alt text-purple-400 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center text-sm">
+                                <span class="text-green-400">+8%</span>
+                                <span class="text-gray-400 ml-2">from yesterday</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 hover:shadow-lg transition-shadow duration-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm font-medium">Security Alerts</p>
+                                    <p class="text-3xl font-bold text-white mt-1">7</p>
+                                </div>
+                                <div class="w-12 h-12 bg-red-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-exclamation-triangle text-red-400 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center text-sm">
+                                <span class="text-yellow-400">2 High Priority</span>
+                                <span class="text-gray-400 ml-2">Requires attention</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                                <i class="fas fa-clock text-primary-400 mr-2"></i>
+                                Recent Activity
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+                                        <div>
+                                            <p class="text-white text-sm font-medium">John Doe - Main Entrance</p>
+                                            <p class="text-gray-400 text-xs">Successful entry</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-gray-400 text-xs">2 min ago</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+                                        <div>
+                                            <p class="text-white text-sm font-medium">Sarah Smith - Parking Garage</p>
+                                            <p class="text-gray-400 text-xs">Successful entry</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-gray-400 text-xs">5 min ago</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-2 h-2 bg-red-400 rounded-full mr-3"></div>
+                                        <div>
+                                            <p class="text-white text-sm font-medium">Unknown Card - Server Room</p>
+                                            <p class="text-gray-400 text-xs">Access denied</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-gray-400 text-xs">8 min ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
+                                <i class="fas fa-shield-alt text-primary-400 mr-2"></i>
+                                System Status
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
+                                        <span class="text-white">Main Server</span>
+                                    </div>
+                                    <span class="text-green-400 text-sm font-medium">Online</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
+                                        <span class="text-white">Database</span>
+                                    </div>
+                                    <span class="text-green-400 text-sm font-medium">Connected</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-yellow-400 rounded-full mr-3"></div>
+                                        <span class="text-white">Backup System</span>
+                                    </div>
+                                    <span class="text-yellow-400 text-sm font-medium">Syncing</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
+                                        <span class="text-white">Network</span>
+                                    </div>
+                                    <span class="text-green-400 text-sm font-medium">Stable</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Other page contents (hidden by default) -->
+                <div id="users-content" class="page-content hidden">
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-white mb-2">User Management</h2>
+                        <p class="text-gray-400">Manage user accounts, permissions, and access levels</p>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-semibold text-white">Active Users</h3>
+                            <button class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                                <i class="fas fa-plus mr-2"></i>Add User
+                            </button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-gray-700">
+                                        <th class="text-left py-3 px-4 text-gray-400 font-medium">Name</th>
+                                        <th class="text-left py-3 px-4 text-gray-400 font-medium">Email</th>
+                                        <th class="text-left py-3 px-4 text-gray-400 font-medium">Role</th>
+                                        <th class="text-left py-3 px-4 text-gray-400 font-medium">Last Access</th>
+                                        <th class="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-700">
+                                    <tr>
+                                        <td class="py-3 px-4 text-white">John Doe</td>
+                                        <td class="py-3 px-4 text-gray-300">john.doe@company.com</td>
+                                        <td class="py-3 px-4 text-gray-300">Manager</td>
+                                        <td class="py-3 px-4 text-gray-300">2 hours ago</td>
+                                        <td class="py-3 px-4">
+                                            <span class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs">Active</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3 px-4 text-white">Sarah Smith</td>
+                                        <td class="py-3 px-4 text-gray-300">sarah.smith@company.com</td>
+                                        <td class="py-3 px-4 text-gray-300">Employee</td>
+                                        <td class="py-3 px-4 text-gray-300">1 day ago</td>
+                                        <td class="py-3 px-4">
+                                            <span class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs">Active</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Access Control Content -->
+                <div id="access-content" class="page-content hidden">
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-white mb-2">Access Control</h2>
+                        <p class="text-gray-400">Manage doors, zones, and access permissions</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">Access Points</h3>
+                            <p class="text-gray-400">Configure and monitor building access points and security zones.</p>
+                        </div>
+                        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-4">Zone Management</h3>
+                            <p class="text-gray-400">Define security zones and set access restrictions for different areas.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Activity Logs Content -->
+                <div id="logs-content" class="page-content hidden">
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-white mb-2">Activity Logs</h2>
+                        <p class="text-gray-400">View detailed access logs and audit trails</p>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4">Recent Access Events</h3>
+                        <p class="text-gray-400">Track all building access events with detailed timestamps and user information.</p>
+                    </div>
+                </div>
+                
+                <!-- Security Alerts Content -->
+                <div id="security-content" class="page-content hidden">
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-white mb-2">Security Alerts</h2>
+                        <p class="text-gray-400">Monitor security events and system notifications</p>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4">Active Security Alerts</h3>
+                        <p class="text-gray-400">Real-time monitoring of security breaches and unauthorized access attempts.</p>
+                    </div>
+                </div>
+                
+                <!-- Reports Content -->
+                <div id="reports-content" class="page-content hidden">
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-white mb-2">Reports & Analytics</h2>
+                        <p class="text-gray-400">Generate comprehensive reports and analyze access patterns</p>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4">Usage Analytics</h3>
+                        <p class="text-gray-400">Detailed reports on building usage, peak hours, and access patterns.</p>
+                    </div>
+                </div>
+                
+                <!-- Settings Content -->
+                <div id="settings-content" class="page-content hidden">
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-white mb-2">System Settings</h2>
+                        <p class="text-gray-400">Configure system preferences and security policies</p>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold text-white mb-4">General Settings</h3>
+                        <p class="text-gray-400">System configuration, notifications, and integration settings.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            class BuildingAccessSystem {
+                constructor() {
+                    this.currentPage = 'dashboard';
+                    this.initEventListeners();
+                    this.updateStats();
+                }
+
+                initEventListeners() {
+                    // Mobile menu toggle
+                    const menuToggle = document.getElementById('menuToggle');
+                    const sidebar = document.getElementById('sidebar');
+                    const overlay = document.getElementById('overlay');
+
+                    menuToggle.addEventListener('click', () => {
+                        sidebar.classList.toggle('-translate-x-full');
+                        overlay.classList.toggle('hidden');
+                    });
+
+                    overlay.addEventListener('click', () => {
+                        sidebar.classList.add('-translate-x-full');
+                        overlay.classList.add('hidden');
+                    });
+
+                    // Navigation links
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const page = link.getAttribute('data-page');
+                            this.navigateToPage(page);
+                        });
+                    });
+
+                    // Handle window resize
+                    window.addEventListener('resize', () => {
+                        if (window.innerWidth >= 1024) {
+                            sidebar.classList.remove('-translate-x-full');
+                            overlay.classList.add('hidden');
+                        } else {
+                            sidebar.classList.add('-translate-x-full');
+                            overlay.classList.add('hidden');
+                        }
+                    });
+                }
+
+                navigateToPage(page) {
+                    // Update active nav link
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.remove('text-white', 'bg-primary-600', 'shadow-lg');
+                        link.classList.add('text-gray-300', 'hover:text-white', 'hover:bg-gray-700');
+                    });
+
+                    const activeLink = document.querySelector(`[data-page="${page}"]`);
+                    activeLink.classList.remove('text-gray-300', 'hover:text-white', 'hover:bg-gray-700');
+                    activeLink.classList.add('text-white', 'bg-primary-600', 'shadow-lg');
+
+                    // Show/hide content
+                    document.querySelectorAll('.page-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+
+                    const targetContent = document.getElementById(`${page}-content`);
+                    if (targetContent) {
+                        targetContent.classList.remove('hidden');
+                        this.currentPage = page;
+                    }
+
+                    // Close mobile menu
+                    if (window.innerWidth < 1024) {
+                        document.getElementById('sidebar').classList.add('-translate-x-full');
+                        document.getElementById('overlay').classList.add('hidden');
+                    }
+                }
+
+                updateStats() {
+                    // Simulate real-time stat updates
+                    setInterval(() => {
+                        const stats = document.querySelectorAll('.text-3xl.font-bold.text-white');
+                        stats.forEach(stat => {
+                            if (!isNaN(parseInt(stat.textContent.replace(/,/g, '')))) {
+                                const currentValue = parseInt(stat.textContent.replace(/,/g, ''));
+                                const variation = Math.floor(Math.random() * 20) - 10;
+                                const newValue = Math.max(0, currentValue + variation);
+                                stat.textContent = newValue.toLocaleString();
+                            }
+                        });
+                    }, 15000);
+                }
+            }
+
+            // Initialize the system when DOM is loaded
+            document.addEventListener('DOMContentLoaded', () => {
+                new BuildingAccessSystem();
+            });
+        </script>
+    </div>
+    <!-- <script type="module" src="/src/main.tsx"></script> -->
+  </body>
+</html>
